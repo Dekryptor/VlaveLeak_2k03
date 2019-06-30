@@ -80,6 +80,12 @@ if errorlevel 1 set BUILD_ERROR=1
 %MSDEV% vgui2/controls/vgui_controls.dsp %CONFIG%"vgui_controls - Win32 Release" %build_target%
 if errorlevel 1 set BUILD_ERROR=1
 
+%MSDEV% "ivp/ivp_workspaces_src/win32/ivp_physics_lib.dsp" %CONFIG%"ivp_physics.lib - Win32 Release" %build_target%
+if errorlevel 1 set BUILD_ERROR=1
+
+%MSDEV% "ivp/ivp_workspaces_src/win32/ivp_compactbuilder_lib.dsp" %CONFIG%"ivp_compactbuilder.lib - Win32 Release" %build_target%
+if errorlevel 1 set BUILD_ERROR=1
+
 %MSDEV% vphysics/vphysics.dsp %CONFIG%"vphysics - Win32 Release" %build_target%
 if errorlevel 1 set BUILD_ERROR=1
 
@@ -182,6 +188,12 @@ if errorlevel 1 set BUILD_ERROR=1
 if errorlevel 1 set BUILD_ERROR=1
 
 %MSDEV% vgui2/controls/vgui_controls.dsp %CONFIG%"vgui_controls - Win32 Debug" %build_target%
+if errorlevel 1 set BUILD_ERROR=1
+
+%MSDEV% "ivp/ivp_workspaces_src/win32/ivp_physics_lib.dsp" %CONFIG%"ivp_physics.lib - Win32 Debug" %build_target%
+if errorlevel 1 set BUILD_ERROR=1
+
+%MSDEV% "ivp/ivp_workspaces_src/win32/ivp_compactbuilder_lib.dsp" %CONFIG%"ivp_compactbuilder.lib - Win32 Debug" %build_target%
 if errorlevel 1 set BUILD_ERROR=1
 
 %MSDEV% vphysics/vphysics.dsp %CONFIG%"vphysics - Win32 Debug" %build_target%

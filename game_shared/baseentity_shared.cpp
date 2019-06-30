@@ -721,10 +721,7 @@ IPhysicsObject *CBaseEntity::VPhysicsInitStatic( void )
 		// must be SOLID_VPHYSICS if in hierarchy to solve collisions correctly
 		if ( GetSolid() == SOLID_BSP )
 		{
-			if ( GetRootMoveParent()->GetSolid() != SOLID_BSP )
-			{
-				SetSolid( SOLID_VPHYSICS );
-			}
+			SetSolid( SOLID_VPHYSICS );
 		}
 
 		return VPhysicsInitShadow( false, false );

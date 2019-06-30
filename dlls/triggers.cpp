@@ -2037,6 +2037,7 @@ void CTriggerCamera::Enable( void )
 	}
 
 	engine->SetView( m_hPlayer->edict(), edict() );
+//	((CBasePlayer*)m_hPlayer.Get())->SetViewEntity( this );
 
 	SetModel( STRING(m_hPlayer->GetModelName()) );
 //	SetModel( (const char *)m_hPlayer->GetModel() ); // VXP
@@ -2066,6 +2067,7 @@ void CTriggerCamera::Disable( void )
 	if (m_hPlayer && m_hPlayer->IsAlive( ))
 	{
 		engine->SetView( m_hPlayer->edict(), m_hPlayer->edict() );
+	//	((CBasePlayer*)m_hPlayer.Get())->SetViewEntity( m_hPlayer );
 		((CBasePlayer *)((CBaseEntity *)m_hPlayer))->EnableControl(TRUE);
 		// Restore the player's viewmodel?
 	}

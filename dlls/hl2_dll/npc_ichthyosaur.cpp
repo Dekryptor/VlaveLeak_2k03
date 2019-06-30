@@ -49,7 +49,9 @@ ConVar	sk_ichthyosaur_melee_dmg( "sk_ichthyosaur_melee_dmg", "0" );
 #define	ENVELOPE_CONTROLLER		(CSoundEnvelopeController::GetController())
 
 #define	FEELER_COLLISION			0
-#define	FEELER_COLLISION_VISUALIZE	(FEELER_COLLISION&&0)
+//#define	FEELER_COLLISION			1
+//#define	FEELER_COLLISION_VISUALIZE	(FEELER_COLLISION&&0)
+#define	FEELER_COLLISION_VISUALIZE	FEELER_COLLISION
 
 enum IchthyosaurMoveType_t
 {
@@ -111,6 +113,8 @@ private:
 	//void	IchTouch( CBaseEntity *pOther );
 
 	float	GetGroundSpeed( void );
+
+	void	DecideEnemyToMoveTo( void );
 
 #if FEELER_COLLISION
 	Vector	DoProbe( const Vector &Probe );
@@ -287,7 +291,8 @@ void CNPC_Ichthyosaur::Spawn( void )
 
 	GetVectors( &forward, NULL, NULL );
 
-	m_vecCurrentVelocity	= forward * m_flGroundSpeed;
+//	m_vecCurrentVelocity	= forward * m_flGroundSpeed;
+	SetAbsVelocity( forward * m_flGroundSpeed ); // VXP
 
 #endif
 
@@ -328,11 +333,13 @@ int CNPC_Ichthyosaur::SelectSchedule( void )
 			return SCHED_ICH_DROWN_VICTIM;
 
 		if ( m_flNextBiteTime > gpGlobals->curtime )
+			DecideEnemyToMoveTo();
 			return	SCHED_PATROL_RUN;
 
 		if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 			return	SCHED_MELEE_ATTACK1;
 
+		DecideEnemyToMoveTo();
 		return SCHED_CHASE_ENEMY;
 	}
 
@@ -350,6 +357,7 @@ bool CNPC_Ichthyosaur::OverrideMove( float flInterval )
 	if ( m_bHasMoveTarget )
 	{
 		DoMovement( flInterval, m_vecLastMoveTarget, ICH_MOVETYPE_ARRIVE );
+		NDebugOverlay::Cross3D( m_vecLastMoveTarget, -Vector(32,32,32), Vector(32,32,32), 255, 0, 0, true, 0.1f );
 	}
 	else
 	{
@@ -391,7 +399,8 @@ Vector CNPC_Ichthyosaur::DoProbe( const Vector &probe )
 		normal		= tr.plane.normal;
 	}
 
-	if ( ( fraction < 1.0f ) && ( GetEnemy() == NULL || tr.u.ent != GetEnemy()->pev ) )
+//	if ( ( fraction < 1.0f ) && ( GetEnemy() == NULL || tr.u.ent != GetEnemy()->pev ) )
+	if ( ( fraction < 1.0f ) && ( GetEnemy() == NULL || engine->PEntityOfEntIndex( tr.GetEntityIndex() ) != GetEnemy()->edict() ) )
 	{
 #if FEELER_COLLISION_VISUALIZE
 		NDebugOverlay::Line( GetLocalOrigin(), probe, 255, 0, 0, false, 0.1f );
@@ -654,6 +663,7 @@ void CNPC_Ichthyosaur::DoMovement( float flInterval, const Vector &MoveTarget, i
 		Steer = (SteerAvoid*0.5f);
 	}
 
+/*
 	m_vecVelocity = m_vecVelocity + (Steer*0.5f);
 
 	VectorNormalize( m_vecVelocity );
@@ -663,6 +673,19 @@ void CNPC_Ichthyosaur::DoMovement( float flInterval, const Vector &MoveTarget, i
 	SteerRel.z = up.Dot( m_vecVelocity );
 
 	m_vecVelocity *= m_flGroundSpeed;
+*/
+
+	// VXP
+	SetAbsVelocity( GetAbsVelocity() + (Steer*0.5f) );
+
+	Vector velToNormalize = GetAbsVelocity();
+	VectorNormalize( velToNormalize );
+	SetAbsVelocity( velToNormalize );
+
+	SteerRel.x = forward.Dot( GetAbsVelocity() );
+	SteerRel.y = right.Dot( GetAbsVelocity() );
+	SteerRel.z = up.Dot( GetAbsVelocity() );
+	SetAbsVelocity( GetAbsVelocity() * m_flGroundSpeed );
 
 #else
 
@@ -825,7 +848,7 @@ bool CNPC_Ichthyosaur::SteerAvoidObstacles(Vector &Steer, const Vector &Velocity
 		{
 			if ( ( pBlocker != NULL ) && ( pBlocker == GetEnemy() ) )
 			{
-				Msg( "Avoided collision\n" );
+				DevMsg( "Avoided collision\n" );
 				return false;
 			}
 
@@ -930,6 +953,8 @@ void CNPC_Ichthyosaur::ClampSteer(Vector &SteerAbs, Vector &SteerRel, Vector &fo
 //-----------------------------------------------------------------------------
 void CNPC_Ichthyosaur::MoveFlyExecute( CBaseEntity *pTargetEnt, const Vector &vecDir, float flDistance, float flInterval )
 {
+//	Assert( 0 ); // VXP: This should not be triggered because there's no calling anywhere
+
 	IchthyosaurMoveType_t eMoveType = ( GetNavigator()->CurWaypointIsGoal() ) ? ICH_MOVETYPE_ARRIVE : ICH_MOVETYPE_SEEK;
 
 	m_flGroundSpeed = GetGroundSpeed();
@@ -1288,6 +1313,20 @@ void CNPC_Ichthyosaur::ReleaseVictim( void )
 	m_pVictim			= NULL;
 	m_flNextBiteTime	= gpGlobals->curtime + 8.0f;
 	m_flHoldTime		= gpGlobals->curtime - 0.1f;
+}
+
+// VXP
+void CNPC_Ichthyosaur::DecideEnemyToMoveTo()
+{
+	CBaseEntity *moveEnt = NULL;
+	if ( GetTarget() != NULL )
+		moveEnt = GetTarget();
+	
+	if ( GetEnemy() != NULL )
+		moveEnt = GetEnemy();
+	
+	if ( moveEnt != NULL )
+		MoveFlyExecute( moveEnt, (GetAbsOrigin() - moveEnt->GetAbsOrigin()), 100, 0.0f );
 }
 
 //-----------------------------------------------------------------------------

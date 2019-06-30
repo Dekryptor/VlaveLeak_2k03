@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //=============================================================================
 
+// VXP: TODO: Maybe, use KeepUpright techniques?
+
 #include "cbase.h"
 
 //#if 0
@@ -37,6 +39,7 @@ public:
 	void	Precache(void);
 	void	Spawn(void);
 	bool	CreateVPhysics( void );
+	bool	ShouldTransmit( const edict_t *recipient, const void *pvs, int clientArea ); // VXP
 
 	// Inputs
 	void InputActivate( inputdata_t &inputdata );
@@ -158,6 +161,8 @@ void CPlayer_Manhack::InputActivate( inputdata_t &inputdata )
 	pPlayer->m_nControlClass	= CLASS_MANHACK;
 	pPlayer->GiveNamedItem( "weapon_manhack" );
 	pPlayer->SelectItem( "weapon_manhack" );
+
+	UTIL_Relink( pPlayer ); // VXP
 }
 
 //-----------------------------------------------------------------------------
@@ -377,6 +382,11 @@ void CPlayer_Manhack::FlyThink()
 
 	Assert( pPlayer );
 
+	// VXP: Fail
+//	QAngle tmpPlyAngles = pPlayer->GetAbsAngles();
+//	tmpPlyAngles.y = 0.0f;
+//	pPlayer->SnapEyeAngles( tmpPlyAngles );
+
 	Vector vPlayerFacing;
 	pPlayer->EyeVectors( &vPlayerFacing );
 
@@ -524,6 +534,22 @@ void CPlayer_Manhack::FlyThink()
 		vNewVelocity = vNewVelocity *PMANHACK_MAX_SPEED;
 		Vector vSubtract = vNewVelocity - vOldVelocity;
 		pPhysObj->AddVelocity(&vSubtract,NULL);
+	}
+}
+
+//------------------------------------------------------------------------------
+// Purpose:
+//------------------------------------------------------------------------------
+bool CPlayer_Manhack::ShouldTransmit( const edict_t *recipient, 
+								  const void *pvs, int clientArea )
+{
+	if (m_bActive)
+	{
+		return true;
+	}
+	else 
+	{
+		return BaseClass::ShouldTransmit( recipient,pvs, clientArea );
 	}
 }
 //#endif

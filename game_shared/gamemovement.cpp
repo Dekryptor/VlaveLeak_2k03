@@ -209,7 +209,7 @@ void CGameMovement::PlantFootprint( surfacedata_t *psurface )
 			CPVSFilter filter( tr.endpos );
 		//	te->FootprintDecal( filter, 0.0f, &tr.endpos, &right, ENTINDEX(tr.u.ent), 
 		//	te->FootprintDecal( filter, 0.0f, &tr.endpos, &right, ENTINDEX(tr.m_pEnt), 
-			te->FootprintDecal( filter, 0.0f, &tr.endpos, &right, 0, 
+			te->FootprintDecal( filter, 0.0f, &tr.endpos, &right, 0, // VXP: FIXME: engine->PEntityOfEntIndex( tr.GetEntityIndex() ) ?
 		//					   gDecals[footprintDecal].index, mType );
 		//					   footprintDecal, mType );
 							   footprintDecal, 0 );

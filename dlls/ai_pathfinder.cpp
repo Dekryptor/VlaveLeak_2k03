@@ -121,7 +121,7 @@ Navigation_t CAI_Pathfinder::ComputeWaypointType( CAI_Node **ppNodes, int parent
 				Assert( (navType == NAV_NONE) || (navType == linkType) );
 				navType = linkType; 
 
-				Msg( "Note: Strange link found between nodes in AI node graph\n" );
+				DevMsg( "Note: Strange link found between nodes in AI node graph\n" );
 				break;
 			}
 		}
@@ -473,6 +473,18 @@ AI_Waypoint_t* CAI_Pathfinder::FindShortRandomPath(int startID, float minPathLen
 		pAInode[neighborID]->ShuffleLinks();
 		for (int link=0; link < pAInode[neighborID]->NumLinks();link++) 
 		{
+			// VXP
+			if ( numStaleNeighbors == ARRAYSIZE(pStaleNeighbor) )
+			{
+				AssertMsg( 0, "Array overflow" );
+				return NULL;
+			}
+			if ( numNeighbors == ARRAYSIZE(pStaleNeighbor) )
+			{
+				AssertMsg( 0, "Array overflow" );
+				return NULL;
+			}
+
 			CAI_Link*	nodeLink = pAInode[neighborID]->GetShuffeledLink(link);
 			int			testID	 = nodeLink->DestNodeID(neighborID);
 
@@ -649,7 +661,7 @@ AI_Waypoint_t* CAI_Pathfinder::CreateNodeWaypoint( Hull_t hullType, int nodeID, 
 		break;
 	}
 
-	return new AI_Waypoint_t( pNode->GetPosition(hullType), pNode->GetYaw(), navType, ( bits_WP_TO_NODE | nodeFlags) , NO_NODE );
+	return new AI_Waypoint_t( pNode->GetPosition(hullType), pNode->GetYaw(), navType, ( bits_WP_TO_NODE | nodeFlags) , NO_NODE ); // VXP: FIXME: Maybe nodeID instead of NO_NODE?
 }
 
 
@@ -866,7 +878,7 @@ bool CAI_Pathfinder::CanGiveWay( const Vector& vStart, const Vector& vEnd, CBase
 {
 	// FIXME: make this a CAI_BaseNPC member function
 	CAI_BaseNPC *pNPCBlocker = pBlocker->MyNPCPointer();
-	if (pNPCBlocker && pNPCBlocker->pev) 
+	if (pNPCBlocker && pNPCBlocker->edict()) 
 	{
 		if (pNPCBlocker->IRelationType( GetOuter() ) == D_LI)
 		{
