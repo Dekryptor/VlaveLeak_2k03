@@ -1130,6 +1130,11 @@ void IVP_Core::core_plausible_check() {
 	//								rot_len<MAX_PLAUSIBLE_LEN, trans_len<MAX_PLAUSIBLE_LEN
 	// Of course I can increase MAX_PLAUSIBLE_LEN, but... Just commenting should be more efficient(?) and softly
 
+
+	// VXP: UPD 07/2019: On zoo_physconstraint (prop_physics models/props_lab/desklamp01.mdl and prop_physics models/props_lab/monitor02.mdl connected by 
+	// phys_ballsocket, both Motion Disabled and Sleep) - player touching the lamp causing "rot_len>-MAX_PLAUSIBLE_LEN" assert to happen
+
+
 //    IVP_ASSERT(rot_change_len<MAX_PLAUSIBLE_LEN);
 //    IVP_ASSERT(trans_change_len<MAX_PLAUSIBLE_LEN);
     IVP_ASSERT(rot_change_len>-MAX_PLAUSIBLE_LEN);

@@ -520,6 +520,7 @@ public:
 	void InputSetTeam( inputdata_t &inputdata );
 	void InputUse( inputdata_t &inputdata );
 	void InputKill( inputdata_t &inputdata );
+	void InputKillHierarchy( inputdata_t &inputdata ); // VXP
 	void InputSetDamageFilter( inputdata_t &inputdata );
 	void InputDispatchEffect( inputdata_t &inputdata );
 	void InputAddContext( inputdata_t &inputdata );

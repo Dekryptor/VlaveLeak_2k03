@@ -1635,6 +1635,7 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_INPUTFUNC( CBaseEntity, FIELD_INTEGER, "SetTeam", InputSetTeam ),
 
 	DEFINE_INPUTFUNC( CBaseEntity, FIELD_VOID, "Kill", InputKill ),
+	DEFINE_INPUTFUNC( CBaseEntity, FIELD_VOID, "KillHierarchy", InputKillHierarchy ), // VXP
 	DEFINE_INPUTFUNC( CBaseEntity, FIELD_VOID, "Use", InputUse ),
 	DEFINE_INPUTFUNC( CBaseEntity, FIELD_INTEGER, "Alpha", InputAlpha ),
 	DEFINE_INPUTFUNC( CBaseEntity, FIELD_COLOR32, "Color", InputColor ),
@@ -3299,6 +3300,26 @@ void CBaseEntity::InputKill( inputdata_t &inputdata )
 	}
 
 	// VXP: TODO: We should just drop if the entity is player
+	UTIL_Remove( this );
+}
+
+void CBaseEntity::InputKillHierarchy( inputdata_t &inputdata )
+{
+	CBaseEntity *pChild, *pNext;
+	for ( pChild = FirstMoveChild(); pChild; pChild = pNext )
+	{
+		pNext = pChild->NextMovePeer();
+		pChild->InputKillHierarchy( inputdata );
+	}
+
+	// tell owner ( if any ) that we're dead. This is mostly for NPCMaker functionality.
+	CBaseEntity *pOwner = GetOwnerEntity();
+	if ( pOwner )
+	{
+		pOwner->DeathNotice( this );
+		SetOwnerEntity( NULL );
+	}
+
 	UTIL_Remove( this );
 }
 
