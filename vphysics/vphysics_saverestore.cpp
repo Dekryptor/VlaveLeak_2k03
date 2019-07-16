@@ -79,6 +79,9 @@ void CPhysicsEnvironment::PreRestore( const physprerestoreparams_t &params )
 	g_VPhysPtrSaveRestoreOps.PreRestore();
 	for ( int i = 0; i < params.recreatedObjectCount; i++ )
 	{
+#ifdef _DEBUG // VXP
+		DevMsg( "AddPtrAssociation (PreRestore (%i of %i)): %i-%i\n", i, params.recreatedObjectCount, params.recreatedObjectList[i].pOldObject, params.recreatedObjectList[i].pNewObject );
+#endif
 		AddPtrAssociation( params.recreatedObjectList[i].pOldObject, params.recreatedObjectList[i].pNewObject );
 	}
 }
@@ -108,6 +111,9 @@ bool CPhysicsEnvironment::Restore( const physrestoreparams_t &params )
 		params.pRestore->ReadInt( (int *)&pOldObject );
 		if ( (*restoreFuncs[type])( params, params.ppObject ) )
 		{
+#ifdef _DEBUG // VXP
+			DevMsg( "AddPtrAssociation (Restore): %i-%i\n", pOldObject, *params.ppObject );
+#endif
 			AddPtrAssociation( pOldObject, *params.ppObject );
 			if ( type == PIID_IPHYSICSOBJECT )
 			{
@@ -136,6 +142,9 @@ void CVPhysPtrSaveRestoreOps::Save( const SaveRestoreFieldInfo_t &fieldInfo, ISa
 	for ( int i = 0; i < nObjects; i++ )
 	{
 		pSave->WriteInt( pField );
+#ifdef _DEBUG // VXP
+		DevMsg( "Saved %i\n", *pField );
+#endif
 		++pField;
 	}
 }
@@ -157,7 +166,18 @@ void CVPhysPtrSaveRestoreOps::Restore( const SaveRestoreFieldInfo_t &fieldInfo, 
 	{
 		pRestore->ReadInt( (int *)ppField );
 
-		int iNewVal = s_VPhysPtrMap.Find( *ppField );
+#ifdef _DEBUG // VXP
+		unsigned short j = s_VPhysPtrMap.FirstInorder();
+		while ( j != s_VPhysPtrMap.InvalidIndex() )
+		{
+		//	DevMsg( "%i is %i while searching for %i, %i, %i\n", j, s_VPhysPtrMap[j], ppField, &ppField, *ppField);
+		//	DevMsg( "\tnorm %i, %i, %i, %i\n", ppField, *ppField, (void *)ppField, (int *)ppField);
+			DevMsg( "Found %i-%i while searching for %i\n", s_VPhysPtrMap.Key(j), s_VPhysPtrMap.Element(j), *ppField );
+			j = s_VPhysPtrMap.NextInorder( j );
+		}
+#endif
+
+		int iNewVal = s_VPhysPtrMap.Find( *ppField ); // VXP: unsigned short maybe?
 		if ( iNewVal != s_VPhysPtrMap.InvalidIndex() )
 		{
 			*ppField = s_VPhysPtrMap[iNewVal];

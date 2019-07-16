@@ -1052,12 +1052,20 @@ void CPhysicsObject::SetMaterialIndex( int materialIndex )
 
 	m_materialIndex = materialIndex;
 	IVP_Material *pMaterial = physprops->GetIVPMaterial( materialIndex );
+
+/*	// VXP: I actually want to catch those, so Asserts down below
 	if ( pMaterial == NULL || m_pObject == NULL )
 	{
 		DevWarning( "CPhysicsObject::SetMaterialIndex: no material or object\n" );
 		m_pObject->l_default_material = NULL;
 		return;
 	}
+*/
+
+	// VXP
+	Assert( pMaterial );
+	Assert( m_pObject );
+
 	m_pObject->l_default_material = pMaterial;
 	m_pObject->recompile_material_changed();
 }

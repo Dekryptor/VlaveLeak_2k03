@@ -1963,7 +1963,7 @@ int CChoreoScene::EventThink( CChoreoEvent *e, float frame_start_time, float fra
 					suppressed = true;
 				}
 			}
-			else
+			else // VXP: FIXME: Can comment this leaf to prevent playing backwards
 			{
 				endtime += m_flSoundSystemLatency;
 
@@ -2108,7 +2108,8 @@ void CChoreoScene::Think( float curtime )
 {
 	CChoreoEvent *e;
 
-	float dt = curtime - m_flCurrentTime;
+	float oldt = m_flCurrentTime;
+	float dt = curtime - oldt;
 
 	bool playing_forward = ( dt >= 0.0f ) ? true : false;
 
@@ -2188,7 +2189,12 @@ void CChoreoScene::Think( float curtime )
 		Msg( "\n" );
 	}
 
-	m_flCurrentTime = curtime;
+//	m_flCurrentTime = curtime;
+	// VXP: If a Process call slams this time, don't override it!!!
+	if ( oldt == m_flCurrentTime )
+	{
+		m_flCurrentTime = curtime;
+	}
 
 	// Still processing?
 	if ( m_nActiveEvents )

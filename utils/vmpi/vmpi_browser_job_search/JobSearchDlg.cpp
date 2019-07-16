@@ -253,7 +253,8 @@ void CJobSearchDlg::OnDblclkWorkerList()
 
 bool ReadStringFromFile( FILE *fp, char *pStr, int strSize )
 {
-	for ( int i=0; i < strSize-2; i++ )
+	int i;
+	for ( i=0; i < strSize-2; i++ )
 	{
 		if ( fread( &pStr[i], 1, 1, fp ) != 1 ||
 			pStr[i] == '\n' )

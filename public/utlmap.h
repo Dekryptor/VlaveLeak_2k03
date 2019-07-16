@@ -1,15 +1,10 @@
-//=========== (C) Copyright 2002 Valve, L.L.C. All rights reserved. ===========
-//
-// The copyright to the contents herein is the property of Valve, L.L.C.
-// The contents may be used and/or copied only with the written permission of
-// Valve, L.L.C., or in accordance with the terms and conditions stipulated in
-// the agreement/contract under which the contents have been supplied.
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 // $Header: $
 // $NoKeywords: $
-//=============================================================================
+//=============================================================================//
 
 #ifndef UTLMAP_H
 #define UTLMAP_H
@@ -45,6 +40,12 @@ public:
 	// LessFunc_t is required, but may be set after the constructor using SetLessFunc() below
 	CUtlMap( int growSize = 0, int initSize = 0, LessFunc_t lessfunc = 0 )
 	 : m_Tree( growSize, initSize, TreeLessFunc )
+	{
+		m_pfnLess = lessfunc;
+	}
+	
+	CUtlMap( LessFunc_t lessfunc )
+	 : m_Tree( TreeLessFunc )
 	{
 		m_pfnLess = lessfunc;
 	}
@@ -138,9 +139,8 @@ public:
 		
 		return Insert( key, insert );
 	}
-	
 
-protected:
+
 	struct Node_t
 	{
 		KeyType_t	key;
@@ -148,7 +148,11 @@ protected:
 	};
 	
 	typedef CUtlRBTree<Node_t, I> CTree;
-	
+
+	CTree *AccessTree()	{ return &m_Tree; }
+
+protected:
+		
 	static bool TreeLessFunc( const Node_t &left, const Node_t &right )
 	{
 		return (*KeyLessFunc())( left.key, right.key );

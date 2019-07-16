@@ -33,6 +33,7 @@ int main( int argc, char* argv[] )
 
 	// Ok, launch it!
 	char commandLine[1024] = {0};
+	int i;
 	for ( i=2; i < argc; i++ )
 	{
 		Q_strncat( commandLine, "\"", sizeof( commandLine ) );

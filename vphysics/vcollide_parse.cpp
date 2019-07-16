@@ -15,7 +15,13 @@
 static void ReadVector( const char *pString, Vector& out )
 {
 	float x, y, z;
-	sscanf( pString, "%f %f %f", &x, &y, &z );
+//	sscanf( pString, "%f %f %f", &x, &y, &z );
+	if ( sscanf( pString, "%f %f %f", &x, &y, &z ) != 3 ) // VXP
+	{
+		VectorCopy( vec3_origin, out );
+		return;
+	}
+
 	out[0] = x;
 	out[1] = y;
 	out[2] = z;
@@ -24,7 +30,13 @@ static void ReadVector( const char *pString, Vector& out )
 static void ReadAngles( const char *pString, QAngle& out )
 {
 	float x, y, z;
-	sscanf( pString, "%f %f %f", &x, &y, &z );
+//	sscanf( pString, "%f %f %f", &x, &y, &z );
+	if ( sscanf( pString, "%f %f %f", &x, &y, &z ) != 3 ) // VXP
+	{
+		VectorCopy( vec3_angle, out );
+		return;
+	}
+
 	out[0] = x;
 	out[1] = y;
 	out[2] = z;
@@ -33,7 +45,16 @@ static void ReadAngles( const char *pString, QAngle& out )
 static void ReadVector4D( const char *pString, Vector4D& out )
 {
 	float x, y, z, w;
-	sscanf( pString, "%f %f %f %f", &x, &y, &z, &w );
+//	sscanf( pString, "%f %f %f %f", &x, &y, &z, &w );
+	if ( sscanf( pString, "%f %f %f %f", &x, &y, &z, &w ) != 4 ) // VXP
+	{
+		out[0] = 0;
+		out[1] = 0;
+		out[2] = 0;
+		out[3] = 0;
+		return;
+	}
+
 	out[0] = x;
 	out[1] = y;
 	out[2] = z;

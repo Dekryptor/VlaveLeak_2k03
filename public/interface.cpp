@@ -144,7 +144,12 @@ CSysModule	*Sys_LoadModule( const char *pModuleName )
 	// if a full path wasn't passed in use the current working dir
 	if ( !Q_IsAbsolutePath(pModuleName) ) // if a full path wasn't passed in
 	{
-		_getcwd( szCwd, sizeof( szCwd ) );
+	//	_getcwd( szCwd, sizeof( szCwd ) );
+		if ( _getcwd( szCwd, sizeof( szCwd ) ) == NULL )
+		{
+			printf( "Sys_LoadModule(): Cannot get current working directory\n" );
+			return NULL;
+		}
 		if ( szCwd[ strlen( szCwd ) - 1 ] == '/' )
 				szCwd[ strlen( szCwd ) - 1 ] = 0;
 

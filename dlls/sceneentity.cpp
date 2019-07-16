@@ -626,7 +626,9 @@ void CSceneEntity::OnRestore()
 		DoThink( dt );
 		if ( m_flCurrentTime == oldT )
 		{
-			Assert( 0 ); // VXP: Happened on disp_test3_new after creating citizen and then saving/restoring
+			// VXP: Happened on disp_test3_new after creating citizen and then saving/restoring
+			// Also when going from d3_c17_14 to previous map and then back
+			Assert( 0 );
 			break;
 		}
 	}

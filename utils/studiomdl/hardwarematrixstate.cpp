@@ -199,7 +199,7 @@ void CHardwareMatrixState::DumpState( void )
 //#endif
 */
 	
-#ifdef 0 // _DEBUG
+#if 0 // #ifdef _DEBUG
 	OutputDebugString( "DumpState\n:" );
 	for( i = 0; i < m_NumMatrices; i++ )
 	{

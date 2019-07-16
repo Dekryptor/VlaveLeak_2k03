@@ -822,6 +822,11 @@ void Grab_Animation( s_source_t *psource )
 			if (psource->rawanim[t] == NULL)
 			{
 				psource->rawanim[t] = (s_bone_t *)kalloc( 1, size );
+				if ( !psource->rawanim[t] ) // VXP
+				{
+					Error( "Grab_Animation(): Cannot allocate memory!" );
+					continue;
+				}
 
 				// duplicate previous frames keys
 				if (t > 0 && psource->rawanim[t-1])
@@ -840,7 +845,8 @@ void Grab_Animation( s_source_t *psource )
 
 			clip_rotations( rot ); // !!!
 		}
-		else if (sscanf( g_szLine, "%s %d", cmd, &index ))
+	//	else if (sscanf( g_szLine, "%s %d", cmd, &index ))
+		else if (sscanf( g_szLine, "%1024s %d", cmd, &index )) // VXP
 		{
 			if (strcmp( cmd, "time" ) == 0) 
 			{
@@ -1287,6 +1293,9 @@ s_source_t *Load_Source( char const *name, const char *ext, bool reverse )
 		return pSource;
 
 	g_source[g_numsources] = (s_source_t *)kalloc( 1, sizeof( s_source_t ) );
+	if ( !g_source[g_numsources] ) // VXP
+		return NULL;
+
 	strcpyn( g_source[g_numsources]->filename, g_szFilename );
 
 	if ( xext[0] == '\0' || _stricmp( xext, "vrm" ) == 0)
@@ -1920,6 +1929,9 @@ int Cmd_Animation( )
 
 	// allocate animation entry
 	g_panimation[g_numani] = (s_animation_t *)kalloc( 1, sizeof( s_animation_t ) );
+	if ( !g_panimation[g_numani] ) // VXP
+		Error( "Cmd_Animation(): Cannot allocate memory!\n", token );
+
 	g_panimation[g_numani]->index = g_numani;
 	s_animation_t *panim = g_panimation[g_numani];
 
